@@ -17,36 +17,36 @@ async function getTodos(){
 getTodos();
 
 
-	async function addtodo(post){
-		let link = await fetch('http://localhost:3000/todos', {
-		method: 'POST', 
-		headers: {
-			'Content-Type': 'application/json;charset=utf-8'
-		},
-		body: JSON.stringify(post)
-		});
-	
-		let response = await link.json();
-		li = response.title;
+async function addtodo(post){
+	let link = await fetch('http://localhost:3000/todos', {
+	method: 'POST', 
+	headers: {
+		'Content-Type': 'application/json;charset=utf-8'
+	},
+	body: JSON.stringify(post)
+	});
+
+	let response = await link.json();
+	li = response.title;
 		
-		console.log(response.title, 'show');
-		getTodos();
-	}
+	console.log(response.title, 'show');
+	getTodos();
+}
 
 
-	async function changeTodo(id, post){
-		let link = await fetch('http://localhost:3000/todos/' + id, {
-		method: 'PUT', 
-		headers: {
-			'Content-Type': 'application/json;charset=utf-8'
-		},
-		body: JSON.stringify(post)
-		});
+async function changeTodo(id, post){
+	let link = await fetch('http://localhost:3000/todos/' + id, {
+	method: 'PUT', 
+	headers: {
+		'Content-Type': 'application/json;charset=utf-8'
+	},
+	body: JSON.stringify(post)
+	});
 	
-		let response = await link.json();
-		console.log(response, 'show');
+	let response = await link.json();
+	console.log(response, 'show');
 
-	}
+}
 
 
 

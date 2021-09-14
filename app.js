@@ -3,21 +3,21 @@ let button = document.querySelector('#textBtn');	//кнопка
 let toDoList = document.getElementById('toDoList');	//поле отображения списка
 let li = document.createElement('li');
 
-button.addEventListener('click', addPoint); //обработчик кнопки
+button.addEventListener('click', todoEvent); //обработчик кнопки
 
 async function getTodos(){
  	let todosArray = await fetch('http://localhost:3000/todos');
 	let todos = await todosArray.json();
 	toDoList.innerHTML = todos.map((item) => {
-		li = `<span><li id = ${item.id} data-status = ${item.completed} class = "notDone"> ${item.title}</li><button id = ${item.id} class = "deleteButton">X</button></span>`;
+		li = `<span><li id = ${item.id} data-id = ${item.id} data-status = ${item.completed} class = "notDone"> ${item.title}</li><button id = ${item.id} class = "deleteButton">X</button></span>`;
 		return li;
 	}).join('');  
 }
 
 getTodos();
 
-function createTodo(post){
-	async function addtodo(){
+
+	async function addtodo(post){
 		let link = await fetch('http://localhost:3000/todos', {
 		method: 'POST', 
 		headers: {
@@ -33,13 +33,9 @@ function createTodo(post){
 		getTodos();
 	}
 
-	addtodo();	
-}
 
-function changeStatus(id, post){
-	async function changeTodo(){
-		let totalLink = 'http://localhost:3000/todos/' + id;
-		let link = await fetch(totalLink, {
+	async function changeTodo(id, post){
+		let link = await fetch('http://localhost:3000/todos/' + id, {
 		method: 'PUT', 
 		headers: {
 			'Content-Type': 'application/json;charset=utf-8'
@@ -52,10 +48,9 @@ function changeStatus(id, post){
 
 	}
 
-	changeTodo();	
-}
 
-function addPoint(e){
+
+function todoEvent(e){
 	e.preventDefault();
 	
 	let inputedPoint = textInput.value; //значение в инпуте
@@ -64,14 +59,13 @@ function addPoint(e){
 		"completed": false
 	}
 
-	createTodo(post);
+	addtodo(post);
 	textInput.value = ''; //очищаем инпут
 }
 
 function deleteItem(id){
-	
-		let totalLink = 'http://localhost:3000/todos/' + id;
-		fetch(totalLink, {
+
+		fetch('http://localhost:3000/todos/' + id, {
 			method: 'DELETE'
 		})
 		.then(res => res.json())
@@ -80,30 +74,35 @@ function deleteItem(id){
 
 }
 
+function liEvent(e){
+	let elem = document.getElementById(e.target.id);
+	let statusString = elem.getAttribute('data-status');
+	let elemId = elem.getAttribute('data-id');
+	newStatus = (statusString.toLowerCase() === 'true'); //преобразуем из "булевой" строки в булево значение
+	newStatus = !newStatus;
+	elem.setAttribute('data-status', newStatus);
+	let title = elem.innerText;
+
+	let changedTodo = {
+		"title": title,
+		"completed": newStatus
+	}
+	changeTodo(elemId, changedTodo);
+	elem.className =  newStatus === true ? 'done' : 'notDone'; //меняем цвет фона
+}
+
+function buttonEvent(e){
+	let targetId = e.target.id;
+	e.target.closest('span').remove();
+	deleteItem(targetId);
+}
+
 toDoList.addEventListener('click', (e) => {
 	e.preventDefault();
 
-
 	if(e.target.tagName === 'LI'){
-		let targetId = e.target.id;
-		let elem = document.getElementById(targetId);
-		let statusString = elem.getAttribute('data-status');
-		newStatus = (statusString.toLowerCase() === 'true'); //преобразуем из "булевой" строки в булево значение
-		newStatus = !newStatus;
-		elem.setAttribute('data-status', newStatus);
-		let title = elem.innerText;
-
-		let changedTodo = {
-			"title": title,
-			"completed": newStatus
-		}
-		changeStatus(targetId, changedTodo);
-		newStatus === true ? elem.className = 'done' : elem.className = 'notDone'; //меняем цвет фона
-	}
-
-	if(e.target.tagName === 'BUTTON'){
-		let targetId = e.target.id;
-		e.target.closest('span').remove();
-		deleteItem(targetId);
+		liEvent(e);
+	}else if(e.target.tagName === 'BUTTON'){
+		buttonEvent(e);
 	}
 })

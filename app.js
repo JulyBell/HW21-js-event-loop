@@ -9,7 +9,7 @@ async function getTodos(){
  	let todosArray = await fetch('http://localhost:3000/todos');
 	let todos = await todosArray.json();
 	toDoList.innerHTML = todos.map((item) => {
-		li = `<li id = ${item.id} data-status = ${item.completed} class = "notDone"> ${item.title}</li><button id = ${item.id} class = "deleteButton">X</button>`;
+		li = `<span><li id = ${item.id} data-status = ${item.completed} class = "notDone"> ${item.title}</li><button id = ${item.id} class = "deleteButton">X</button></span>`;
 		return li;
 	}).join('');  
 }
@@ -75,9 +75,9 @@ function deleteItem(id){
 			method: 'DELETE'
 		})
 		.then(res => res.json())
-		.then(res => window.location.reload())
+		.then(res => console.log(res))
 		.catch(err => console.log(err));
-		
+
 		getTodos();
 }
 
@@ -104,7 +104,7 @@ toDoList.addEventListener('click', (e) => {
 
 	if(e.target.tagName === 'BUTTON'){
 		let targetId = e.target.id;
+		e.target.closest('span').remove();
 		deleteItem(targetId);
 	}
 })
-

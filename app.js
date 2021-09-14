@@ -69,19 +69,16 @@ function addPoint(e){
 }
 
 function deleteItem(id){
-	async function deleteToDo(){
+	
 		let totalLink = 'http://localhost:3000/todos/' + id;
-		let link = await fetch(totalLink, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			}
-		});
-		let response = await link.json();
-		console.log(response, 'deleted');
-	}
-
-	deleteToDo();
+		fetch(totalLink, {
+			method: 'DELETE'
+		})
+		.then(res => res.json())
+		.then(res => window.location.reload())
+		.catch(err => console.log(err));
+		
+		getTodos();
 }
 
 toDoList.addEventListener('click', (e) => {
@@ -107,9 +104,7 @@ toDoList.addEventListener('click', (e) => {
 
 	if(e.target.tagName === 'BUTTON'){
 		let targetId = e.target.id;
-		console.log(targetId, 'delete id')
 		deleteItem(targetId);
-		getTodos();
 	}
 })
 
